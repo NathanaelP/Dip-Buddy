@@ -48,11 +48,22 @@
 
     <main id="view-container" class="view-container">
 
-      <!-- Dashboard view — stub for Step 1, populated in Step 2 -->
+      <!-- Dashboard view -->
       <section id="view-dashboard" class="view active">
-        <h2 style="margin-top:0">Dashboard</h2>
-        <p style="color:var(--text-secondary)">Floor items will appear here in Step 2.</p>
-        <button id="logout-btn" class="btn btn-secondary" style="max-width:200px">Sign Out</button>
+        <div id="urgent-banner" class="urgent-banner" hidden>
+          <span id="urgent-text"></span>
+        </div>
+        <header class="dash-header">
+          <h1 class="dash-title">Floor Items</h1>
+          <button id="logout-btn" class="btn-icon" title="Sign out" aria-label="Sign out">&#10148;</button>
+        </header>
+        <div id="dash-loading" class="dash-loading">Loading&hellip;</div>
+        <div id="item-list" class="item-list"></div>
+        <div id="empty-state" class="empty-state" hidden>
+          <p class="empty-icon">&#128717;</p>
+          <p class="empty-msg">No items on the floor.</p>
+          <p class="empty-hint">Tap <strong>+</strong> to add one.</p>
+        </div>
       </section>
 
       <!-- Add Item view -->
