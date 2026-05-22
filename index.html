@@ -152,17 +152,91 @@
 
       <!-- Products view -->
       <section id="view-products" class="view" hidden>
-        <h2 style="margin-top:0">Products</h2>
-        <p style="color:var(--text-secondary)">Coming in Step 9.</p>
+        <header class="dash-header">
+          <h1 class="dash-title">Products</h1>
+        </header>
+        <div class="search-row">
+          <input type="search" id="products-search" class="search-input"
+            placeholder="Search by name, brand, or barcode…"
+            autocomplete="off" inputmode="search">
+        </div>
+        <p id="products-count" class="products-count" hidden></p>
+        <div id="products-loading" class="dash-loading">Loading&hellip;</div>
+        <div id="products-list" class="products-list"></div>
+        <div id="products-empty" class="empty-state" hidden>
+          <p class="empty-icon">&#9711;</p>
+          <p class="empty-msg">No products yet.</p>
+          <p class="empty-hint">Products are saved automatically when you scan a barcode.</p>
+        </div>
       </section>
 
-      <!-- Settings view -->
+      <!-- Settings view (admin only) -->
       <section id="view-settings" class="view" hidden>
-        <h2 style="margin-top:0">Settings</h2>
-        <p style="color:var(--text-secondary)">Coming in Step 10.</p>
+        <header class="dash-header">
+          <h1 class="dash-title">Settings</h1>
+        </header>
+
+        <!-- Warn Days -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Expiration Warning</h2>
+          <p class="settings-section-desc">Show a warning badge this many days before an item's pull date.</p>
+          <div class="settings-warn-row">
+            <input type="number" id="settings-warn-days"
+              class="settings-warn-input"
+              min="1" max="14" inputmode="numeric">
+            <button type="button" id="settings-warn-save" class="btn btn-primary settings-warn-btn">Save</button>
+          </div>
+          <div id="settings-warn-status" class="settings-status" hidden></div>
+        </div>
+
+        <!-- User Management -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Team Members</h2>
+          <p class="settings-section-desc">Tap a member to toggle their role between Associate and Admin.</p>
+          <div id="settings-users-loading" class="dash-loading">Loading&hellip;</div>
+          <div id="settings-users-error" class="error-message" hidden></div>
+          <div id="settings-user-list" class="user-list"></div>
+        </div>
       </section>
 
     </main>
+
+    <!-- Product edit overlay (admin only) -->
+    <div id="edit-product-overlay" class="scanner-overlay" hidden>
+      <div class="scanner-modal">
+        <header class="scanner-header">
+          <span class="scanner-title">Edit Product</span>
+          <button type="button" id="edit-product-close" class="btn-icon" aria-label="Close">&#10005;</button>
+        </header>
+        <form id="edit-product-form" novalidate>
+          <div class="field-group">
+            <label for="edit-product-name">Name</label>
+            <input type="text" id="edit-product-name" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label for="edit-product-brand">Brand</label>
+            <input type="text" id="edit-product-brand" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label for="edit-product-category">Category</label>
+            <input type="text" id="edit-product-category" placeholder="e.g. hummus, dip" autocomplete="off">
+          </div>
+          <label class="toggle-row" for="edit-product-slow-mover">
+            <span class="toggle-text">
+              <span class="toggle-name">Slow Mover</span>
+              <span class="toggle-hint">Pull in morning on pull date</span>
+            </span>
+            <span class="toggle-switch">
+              <input type="checkbox" id="edit-product-slow-mover" class="toggle-input">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </span>
+          </label>
+          <div id="edit-product-error" class="error-message" hidden></div>
+          <button type="submit" id="edit-product-save" class="btn btn-primary" style="margin-top:1rem">Save</button>
+          <button type="button" id="edit-product-delete" class="btn btn-danger">Delete from Catalog</button>
+        </form>
+      </div>
+    </div>
 
     <!-- Barcode scanner overlay -->
     <div id="scanner-overlay" class="scanner-overlay" hidden>
