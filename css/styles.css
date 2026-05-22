@@ -247,6 +247,142 @@ input.input-error {
 .badge-warn    { background: rgba(245, 158, 11, 0.15); color: var(--status-warn); }
 .badge-good    { background: rgba(34, 197, 94, 0.15);  color: var(--status-good); }
 
+/* ─── Dashboard ─────────────────────────────────────────── */
+
+.urgent-banner {
+  background: rgba(239, 68, 68, 0.12);
+  border-left: 4px solid var(--status-expired);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dash-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-icon:hover { color: var(--text-secondary); }
+
+.dash-loading {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ─── Item Cards ─────────────────────────────────────────── */
+
+.item-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  border-left: 4px solid transparent;
+}
+
+.item-card--expired { border-left-color: var(--status-expired); }
+.item-card--pull    { border-left-color: var(--status-pull); }
+.item-card--warn    { border-left-color: var(--status-warn); }
+.item-card--good    { border-left-color: var(--status-good); }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-name {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.meta-item {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.card-dates {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ─── Empty State ────────────────────────────────────────── */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-icon { font-size: 2.5rem; margin: 0 0 0.5rem; }
+.empty-msg  { font-size: 1rem; font-weight: 500; margin: 0 0 0.25rem; color: var(--text-secondary); }
+.empty-hint { font-size: 0.875rem; margin: 0; }
+
 /* ─── Offline Indicator ─────────────────────────────────── */
 
 .offline-banner {
