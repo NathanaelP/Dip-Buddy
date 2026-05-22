@@ -23,8 +23,9 @@ auth.onAuthStateChanged(async (user) => {
       console.warn('Could not write user doc (check Firestore rules):', err);
     }
     showApp();
-    if (typeof DashboardModule !== 'undefined') DashboardModule.init();
-    if (typeof AddItemModule  !== 'undefined') AddItemModule.init();
+    if (typeof DashboardModule  !== 'undefined') DashboardModule.init();
+    if (typeof AddItemModule   !== 'undefined') AddItemModule.init();
+    if (typeof ProductsModule  !== 'undefined') ProductsModule.init();
   } else {
     currentUser = null;
     showLogin();
