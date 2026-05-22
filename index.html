@@ -78,7 +78,7 @@
           <!-- Barcode scan -->
           <div class="scan-row">
             <button type="button" id="scan-barcode-btn" class="btn btn-secondary scan-btn">
-              &#128247; Scan Barcode
+              Scan Barcode
             </button>
           </div>
           <div id="scan-result" class="scan-result-banner" hidden>
@@ -98,6 +98,14 @@
             <input type="date" id="ai-exp-date" required>
             <div id="pull-date-preview" class="pull-preview" hidden>
               Pull by: <strong id="pull-date-display"></strong>
+            </div>
+            <button type="button" id="ocr-scan-btn" class="btn btn-secondary ocr-btn">
+              Scan Label for Date
+            </button>
+            <!-- file input — iOS opens native camera; avoids getUserMedia streaming issues -->
+            <input type="file" id="ocr-photo-input" accept="image/*" capture="environment" hidden>
+            <div id="ocr-result" class="ocr-result" hidden>
+              <span id="ocr-status"></span>
             </div>
           </div>
 
@@ -196,6 +204,8 @@
 
   <!-- ZXing barcode scanner -->
   <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
+  <!-- Tesseract OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
   <!-- Firebase SDK v9 compat -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

@@ -522,6 +522,31 @@ input.input-error {
 }
 .btn-text:hover { color: var(--text-secondary); }
 
+/* ─── OCR ───────────────────────────────────────────────── */
+
+.ocr-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.ocr-result {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--text-muted);
+}
+
+.ocr-result.ocr-result--found {
+  background: rgba(34, 197, 94, 0.08);
+  border-left-color: var(--status-good);
+  color: var(--status-good);
+  font-weight: 500;
+}
+
 /* ─── Add Item Form ──────────────────────────────────────── */
 
 .required { color: var(--status-expired); }
