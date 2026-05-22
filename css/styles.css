@@ -1,0 +1,261 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary:    #0f172a;
+  --bg-surface:    #1e293b;
+  --bg-elevated:   #334155;
+
+  --text-primary:   #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+
+  --status-expired: #ef4444;
+  --status-pull:    #f97316;
+  --status-warn:    #f59e0b;
+  --status-good:    #22c55e;
+
+  --accent:         #3b82f6;
+  --accent-hover:   #2563eb;
+
+  --nav-height:     64px;
+  --tap-min:        48px;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Login Screen ─────────────────────────────────────── */
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--bg-primary);
+}
+
+.login-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.app-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.app-subtitle {
+  color: var(--text-secondary);
+  margin: 0 0 2rem;
+  font-size: 0.9rem;
+}
+
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  display: block;
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0 1rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  min-height: var(--tap-min);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: var(--accent);
+}
+
+input.input-error {
+  border-color: var(--status-expired);
+}
+
+/* ─── Error Message ─────────────────────────────────────── */
+
+.error-message {
+  color: var(--status-expired);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.625rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--status-expired);
+  line-height: 1.4;
+}
+
+/* ─── Buttons ───────────────────────────────────────────── */
+
+.btn {
+  display: block;
+  width: 100%;
+  min-height: var(--tap-min);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover,
+.btn-secondary:active {
+  background: var(--bg-surface);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── App Shell ─────────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.view-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  padding-bottom: calc(var(--nav-height) + 1rem);
+}
+
+/* ─── Views ─────────────────────────────────────────────── */
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* ─── Bottom Nav ─────────────────────────────────────────── */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: var(--bg-surface);
+  display: flex;
+  border-top: 1px solid var(--bg-elevated);
+  z-index: 100;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  min-height: var(--tap-min);
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item.active {
+  color: var(--accent);
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* ─── Status Badges ─────────────────────────────────────── */
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-expired { background: rgba(239, 68, 68, 0.15);  color: var(--status-expired); }
+.badge-pull    { background: rgba(249, 115, 22, 0.15); color: var(--status-pull); }
+.badge-warn    { background: rgba(245, 158, 11, 0.15); color: var(--status-warn); }
+.badge-good    { background: rgba(34, 197, 94, 0.15);  color: var(--status-good); }
+
+/* ─── Offline Indicator ─────────────────────────────────── */
+
+.offline-banner {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 0.4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+}
