@@ -26,6 +26,7 @@ auth.onAuthStateChanged(async (user) => {
     if (typeof DashboardModule  !== 'undefined') DashboardModule.init();
     if (typeof AddItemModule   !== 'undefined') AddItemModule.init();
     if (typeof ProductsModule  !== 'undefined') ProductsModule.init();
+    if (typeof SettingsModule  !== 'undefined') SettingsModule.init();
   } else {
     currentUser = null;
     showLogin();
@@ -89,6 +90,12 @@ logoutBtn.addEventListener('click', async () => {
 function showApp() {
   loginScreen.hidden = true;
   appShell.hidden = false;
+
+  // Hide settings nav for non-admins
+  const isAdmin = userProfile?.role === 'admin';
+  const settingsNavItem = document.querySelector('.nav-item[data-view="settings"]');
+  if (settingsNavItem) settingsNavItem.hidden = !isAdmin;
+
   const hash = window.location.hash.replace('#', '') || 'dashboard';
   navigateTo(hash);
 }
@@ -105,6 +112,9 @@ function showLogin() {
 function navigateTo(viewId) {
   const validViews = ['dashboard', 'add-item', 'products', 'settings'];
   if (!validViews.includes(viewId)) viewId = 'dashboard';
+
+  // Gate settings to admins
+  if (viewId === 'settings' && userProfile?.role !== 'admin') viewId = 'dashboard';
 
   document.querySelectorAll('.view').forEach(v => {
     v.hidden = true;

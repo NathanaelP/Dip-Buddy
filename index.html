@@ -170,10 +170,33 @@
         </div>
       </section>
 
-      <!-- Settings view -->
+      <!-- Settings view (admin only) -->
       <section id="view-settings" class="view" hidden>
-        <h2 style="margin-top:0">Settings</h2>
-        <p style="color:var(--text-secondary)">Coming in Step 10.</p>
+        <header class="dash-header">
+          <h1 class="dash-title">Settings</h1>
+        </header>
+
+        <!-- Warn Days -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Expiration Warning</h2>
+          <p class="settings-section-desc">Show a warning badge this many days before an item's pull date.</p>
+          <div class="settings-warn-row">
+            <input type="number" id="settings-warn-days"
+              class="settings-warn-input"
+              min="1" max="14" inputmode="numeric">
+            <button type="button" id="settings-warn-save" class="btn btn-primary settings-warn-btn">Save</button>
+          </div>
+          <div id="settings-warn-status" class="settings-status" hidden></div>
+        </div>
+
+        <!-- User Management -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Team Members</h2>
+          <p class="settings-section-desc">Tap a member to toggle their role between Associate and Admin.</p>
+          <div id="settings-users-loading" class="dash-loading">Loading&hellip;</div>
+          <div id="settings-users-error" class="error-message" hidden></div>
+          <div id="settings-user-list" class="user-list"></div>
+        </div>
       </section>
 
     </main>
