@@ -16,7 +16,11 @@ const logoutBtn     = document.getElementById('logout-btn');
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    await ensureUserDoc(user);
+    try {
+      await ensureUserDoc(user);
+    } catch (err) {
+      console.warn('Could not write user doc (check Firestore rules):', err);
+    }
     showApp();
     if (typeof DashboardModule !== 'undefined') DashboardModule.init();
   } else {
