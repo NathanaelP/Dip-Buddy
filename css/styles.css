@@ -392,6 +392,136 @@ input.input-error {
   border-left: 3px solid var(--status-warn);
 }
 
+/* ─── Barcode Scanner ───────────────────────────────────── */
+
+.scanner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: flex-end;
+  z-index: 300;
+}
+
+.scanner-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.scanner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.scanner-title { font-weight: 600; font-size: 1rem; }
+
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: #000;
+  margin: 0.75rem 0;
+}
+
+.scanner-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanner-aim {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%;
+  height: 38%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+}
+
+.scanner-aim::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  top: 0;
+  animation: scan-sweep 2s ease-in-out infinite;
+}
+
+@keyframes scan-sweep {
+  0%   { top: 0; }
+  50%  { top: calc(100% - 2px); }
+  100% { top: 0; }
+}
+
+.scanner-hint {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.scanner-error {
+  color: var(--status-expired);
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+/* Scan button and result banner */
+
+.scan-row { margin-bottom: 0.75rem; }
+
+.scan-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.scan-result-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  border-left: 3px solid transparent;
+}
+
+.scan-result-banner.scan-result--found {
+  background: rgba(34, 197, 94, 0.08);
+  border-left-color: var(--status-good);
+}
+
+#scan-status { flex: 1; color: var(--text-secondary); }
+.scan-result--found #scan-status { color: var(--status-good); font-weight: 500; }
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-text:hover { color: var(--text-secondary); }
+
 /* ─── Add Item Form ──────────────────────────────────────── */
 
 .required { color: var(--status-expired); }

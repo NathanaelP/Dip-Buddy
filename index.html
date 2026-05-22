@@ -75,6 +75,17 @@
 
         <form id="add-item-form" novalidate>
 
+          <!-- Barcode scan -->
+          <div class="scan-row">
+            <button type="button" id="scan-barcode-btn" class="btn btn-secondary scan-btn">
+              &#128247; Scan Barcode
+            </button>
+          </div>
+          <div id="scan-result" class="scan-result-banner" hidden>
+            <span id="scan-status"></span>
+            <button type="button" id="scan-clear" class="btn-text">Clear</button>
+          </div>
+
           <div class="field-group">
             <label for="ai-product-name">Product Name <span class="required">*</span></label>
             <input type="text" id="ai-product-name"
@@ -145,6 +156,22 @@
 
     </main>
 
+    <!-- Barcode scanner overlay -->
+    <div id="scanner-overlay" class="scanner-overlay" hidden>
+      <div class="scanner-modal">
+        <header class="scanner-header">
+          <span class="scanner-title">Scan Barcode</span>
+          <button type="button" id="scanner-close" class="btn-icon" aria-label="Close scanner">&#10005;</button>
+        </header>
+        <div class="scanner-viewport">
+          <video id="scanner-video" class="scanner-video" autoplay muted playsinline></video>
+          <div class="scanner-aim"></div>
+        </div>
+        <p class="scanner-hint">Point camera at product barcode</p>
+        <div id="scanner-error" class="scanner-error" hidden></div>
+      </div>
+    </div>
+
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
       <a href="#dashboard" class="nav-item active" data-view="dashboard">
@@ -166,6 +193,9 @@
     </nav>
 
   </div>
+
+  <!-- ZXing barcode scanner -->
+  <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 
   <!-- Firebase SDK v9 compat -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
