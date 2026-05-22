@@ -70,10 +70,21 @@
       <section id="view-add-item" class="view" hidden>
         <header class="dash-header">
           <h1 class="dash-title">Add Item</h1>
-          <button id="add-item-cancel" class="btn-icon" aria-label="Cancel">&#10005;</button>
+          <button type="button" id="add-item-cancel" class="btn-icon" aria-label="Cancel">&#10005;</button>
         </header>
 
         <form id="add-item-form" novalidate>
+
+          <!-- Barcode scan -->
+          <div class="scan-row">
+            <button type="button" id="scan-barcode-btn" class="btn btn-secondary scan-btn">
+              Scan Barcode
+            </button>
+          </div>
+          <div id="scan-result" class="scan-result-banner" hidden>
+            <span id="scan-status"></span>
+            <button type="button" id="scan-clear" class="btn-text">Clear</button>
+          </div>
 
           <div class="field-group">
             <label for="ai-product-name">Product Name <span class="required">*</span></label>
@@ -87,6 +98,14 @@
             <input type="date" id="ai-exp-date" required>
             <div id="pull-date-preview" class="pull-preview" hidden>
               Pull by: <strong id="pull-date-display"></strong>
+            </div>
+            <button type="button" id="ocr-scan-btn" class="btn btn-secondary ocr-btn">
+              Scan Label for Date
+            </button>
+            <!-- file input — iOS opens native camera; avoids getUserMedia streaming issues -->
+            <input type="file" id="ocr-photo-input" accept="image/*" capture="environment" hidden>
+            <div id="ocr-result" class="ocr-result" hidden>
+              <span id="ocr-status"></span>
             </div>
           </div>
 
@@ -145,6 +164,22 @@
 
     </main>
 
+    <!-- Barcode scanner overlay -->
+    <div id="scanner-overlay" class="scanner-overlay" hidden>
+      <div class="scanner-modal">
+        <header class="scanner-header">
+          <span class="scanner-title">Scan Barcode</span>
+          <button type="button" id="scanner-close" class="btn-icon" aria-label="Close scanner">&#10005;</button>
+        </header>
+        <div class="scanner-viewport">
+          <video id="scanner-video" class="scanner-video" autoplay muted playsinline></video>
+          <div class="scanner-aim"></div>
+        </div>
+        <p class="scanner-hint">Point camera at product barcode</p>
+        <div id="scanner-error" class="scanner-error" hidden></div>
+      </div>
+    </div>
+
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
       <a href="#dashboard" class="nav-item active" data-view="dashboard">
@@ -166,6 +201,11 @@
     </nav>
 
   </div>
+
+  <!-- ZXing barcode scanner -->
+  <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
+  <!-- Tesseract OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
   <!-- Firebase SDK v9 compat -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
