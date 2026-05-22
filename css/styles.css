@@ -2,6 +2,8 @@
   box-sizing: border-box;
 }
 
+[hidden] { display: none !important; }
+
 :root {
   --bg-primary:    #0f172a;
   --bg-surface:    #1e293b;
