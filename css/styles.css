@@ -383,6 +383,15 @@ input.input-error {
 .empty-msg  { font-size: 1rem; font-weight: 500; margin: 0 0 0.25rem; color: var(--text-secondary); }
 .empty-hint { font-size: 0.875rem; margin: 0; }
 
+.dash-error {
+  color: var(--status-warn);
+  font-size: 0.9rem;
+  padding: 1rem;
+  background: rgba(245,158,11,0.08);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--status-warn);
+}
+
 /* ─── Add Item Form ──────────────────────────────────────── */
 
 .required { color: var(--status-expired); }

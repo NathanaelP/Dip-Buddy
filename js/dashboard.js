@@ -50,6 +50,9 @@ const DashboardModule = (() => {
       }, err => {
         console.error('Dashboard listener error:', err);
         loading.hidden = true;
+        if (err.code === 'permission-denied') {
+          itemList.innerHTML = `<p class="dash-error">Permission denied — update your Firestore rules in Firebase Console.</p>`;
+        }
       });
   }
 
