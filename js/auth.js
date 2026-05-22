@@ -1,6 +1,7 @@
 // Auth gatekeeper — controls login/app visibility and hash routing
 
 let currentUser = null;
+let userProfile  = null;
 
 const loginScreen   = document.getElementById('login-screen');
 const appShell      = document.getElementById('app-shell');
@@ -23,6 +24,7 @@ auth.onAuthStateChanged(async (user) => {
     }
     showApp();
     if (typeof DashboardModule !== 'undefined') DashboardModule.init();
+    if (typeof AddItemModule  !== 'undefined') AddItemModule.init();
   } else {
     currentUser = null;
     showLogin();
@@ -33,13 +35,17 @@ async function ensureUserDoc(user) {
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
   if (!snap.exists) {
-    await ref.set({
+    const data = {
       uid: user.uid,
       email: user.email,
       name: user.displayName || user.email.split('@')[0],
       role: 'associate',
       createdAt: new Date().toISOString()
-    });
+    };
+    await ref.set(data);
+    userProfile = data;
+  } else {
+    userProfile = snap.data();
   }
 }
 
@@ -164,5 +170,6 @@ function mapAuthError(code) {
 
 window.AuthModule = {
   getCurrentUser: () => currentUser,
+  getProfile:     () => userProfile,
   navigateTo,
 };
