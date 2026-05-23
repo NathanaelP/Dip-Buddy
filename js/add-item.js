@@ -132,7 +132,21 @@ const AddItemModule = (() => {
     errEl.hidden   = true;
 
     try {
-      codeReader    = new ZXing.BrowserMultiFormatReader();
+      // Limit to common food product barcode formats for faster, more reliable
+      // decoding. TRY_HARDER improves detection of damaged or skewed barcodes.
+      const hints = new Map();
+      if (ZXing.DecodeHintType && ZXing.BarcodeFormat) {
+        hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+          ZXing.BarcodeFormat.EAN_13,
+          ZXing.BarcodeFormat.EAN_8,
+          ZXing.BarcodeFormat.UPC_A,
+          ZXing.BarcodeFormat.UPC_E,
+          ZXing.BarcodeFormat.CODE_128,
+          ZXing.BarcodeFormat.CODE_39,
+        ]);
+        hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      }
+      codeReader    = new ZXing.BrowserMultiFormatReader(hints);
       scannerActive = true;
 
       await codeReader.decodeFromConstraints(
@@ -287,22 +301,37 @@ const AddItemModule = (() => {
       });
 
       const date = parseDateFromOCR(data.text);
+      const nameEl = document.getElementById('ai-product-name');
+      const extractedName = !nameEl.value.trim() ? extractProductName(data.text) : null;
+
+      if (extractedName) nameEl.value = extractedName;
 
       if (date) {
         const expInput = document.getElementById('ai-exp-date');
         expInput.value = date;
         expInput.dispatchEvent(new Event('change'));
-        setOCRStatus('Date found: ' + formatDate(date));
+        const msg = extractedName
+          ? `Date: ${formatDate(date)} — Name: ${extractedName}`
+          : `Date found: ${formatDate(date)}`;
+        setOCRStatus(msg);
+        resultEl.classList.add('ocr-result--found');
+      } else if (extractedName) {
+        setOCRStatus(`Name: ${extractedName} — enter date manually`);
         resultEl.classList.add('ocr-result--found');
       } else {
-        setOCRStatus('No date found — enter manually.');
+        setOCRStatus('Nothing detected — enter fields manually.');
       }
     } catch (err) {
       console.error('OCR error:', err);
-      setOCRStatus('OCR failed — enter date manually.');
+      setOCRStatus('OCR failed — enter fields manually.');
     }
   }
 
+  // Grayscale + contrast boost only. No binary threshold.
+  // A hard threshold (previous approach) turns brown cardboard and colored
+  // backgrounds solid black, making the image unreadable. Tesseract 4 (LSTM)
+  // applies its own adaptive binarization internally and works better on
+  // continuous grayscale than on a pre-binarized image.
   function preprocessImage(file) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -311,8 +340,7 @@ const AddItemModule = (() => {
       img.onload = () => {
         URL.revokeObjectURL(url);
 
-        // Cap dimensions to avoid memory crashes on iOS
-        const MAX = 1200;
+        const MAX = 1600;
         let w = img.naturalWidth;
         let h = img.naturalHeight;
         if (w > MAX || h > MAX) {
@@ -331,12 +359,9 @@ const AddItemModule = (() => {
         const d = imgData.data;
 
         for (let i = 0; i < d.length; i += 4) {
-          // Luminance grayscale
-          const gray     = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          // Contrast stretch then hard threshold
-          const boosted  = Math.min(255, Math.max(0, (gray - 128) * 1.6 + 128));
-          const binary   = boosted > 135 ? 255 : 0;
-          d[i] = d[i + 1] = d[i + 2] = binary;
+          const gray    = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          const boosted = Math.min(255, Math.max(0, (gray - 128) * 1.4 + 128));
+          d[i] = d[i + 1] = d[i + 2] = boosted;
         }
 
         ctx.putImageData(imgData, 0, 0);
@@ -354,15 +379,21 @@ const AddItemModule = (() => {
       jul:7, aug:8, sep:9, oct:10, nov:11, dec:12,
     };
 
+    // Strip common label prefixes so patterns match cleanly
+    const clean = text.replace(
+      /\b(best\s*by|use\s*by|sell\s*by|bb\s*:?|exp(?:iry|iration)?\s*(?:date)?\s*:?|best\s*before)\b/gi,
+      ' '
+    );
+
     // YYYY-MM-DD
-    let m = text.match(/\b(\d{4})[\/\-](\d{2})[\/\-](\d{2})\b/);
+    let m = clean.match(/\b(\d{4})[\/\-](\d{2})[\/\-](\d{2})\b/);
     if (m) {
       const d = `${m[1]}-${m[2]}-${m[3]}`;
       if (isPlausible(d)) return d;
     }
 
-    // MM/DD/YY, MM-DD-YY, MM.DD.YY etc.
-    m = text.match(/\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})\b/);
+    // MM/DD/YY or MM/DD/YYYY
+    m = clean.match(/\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})\b/);
     if (m) {
       const yr = m[3].length === 2
         ? (parseInt(m[3], 10) < 50 ? '20' + m[3] : '19' + m[3])
@@ -371,8 +402,18 @@ const AddItemModule = (() => {
       if (isPlausible(d)) return d;
     }
 
-    // MAY 28 2026 or MAY28, 2026
-    m = text.match(/\b([A-Za-z]{3})\s*(\d{1,2})[,\s]+(\d{4})\b/);
+    // DD MON YYYY  e.g. "26 JUN 2026" — common on distributor case labels
+    m = clean.match(/\b(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\b/);
+    if (m) {
+      const mon = MONTHS[m[2].toLowerCase()];
+      if (mon) {
+        const d = `${m[3]}-${String(mon).padStart(2, '0')}-${String(m[1]).padStart(2, '0')}`;
+        if (isPlausible(d)) return d;
+      }
+    }
+
+    // MON DD YYYY  e.g. "JUN 26 2026" or "MAY28, 2026"
+    m = clean.match(/\b([A-Za-z]{3})\s*(\d{1,2})[,\s]+(\d{4})\b/);
     if (m) {
       const mon = MONTHS[m[1].toLowerCase()];
       if (mon) {
@@ -381,6 +422,40 @@ const AddItemModule = (() => {
       }
     }
 
+    return null;
+  }
+
+  // Lines to skip when extracting a product name
+  const NAME_SKIP = [
+    /^\d+$/,                          // pure numbers
+    /^[\d\s\/\-\.]+$/,               // dates / number strings
+    /keep\s+refrigerated/i,
+    /customer\s+service/i,
+    /made\s+in/i,
+    /units\s*\/\s*unit/i,
+    /part\s+(?:id|no)/i,
+    /^bt#/i,
+    /^upc/i,
+    /^[a-z]{2,3}\d{5,}/i,            // lot numbers like LA005410025518
+    /^\d{3}[\s\-.]?\d{3}[\s\-.]?\d{4}$/, // phone numbers
+    /\d{10,}/,                        // long barcode strings
+    /^[0-9\s:]{6,}$/,                // timestamps / codes
+  ];
+
+  function extractProductName(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length >= 4);
+
+    for (const line of lines) {
+      if (NAME_SKIP.some(p => p.test(line))) continue;
+      if (parseDateFromOCR(line)) continue;
+
+      // Must contain at least 3 letters
+      if ((line.match(/[A-Za-z]/g) || []).length < 3) continue;
+
+      // Trim trailing noise characters
+      const cleaned = line.replace(/[^A-Za-z0-9\s\-&'\.]/g, '').trim();
+      if (cleaned.length >= 4) return cleaned;
+    }
     return null;
   }
 
