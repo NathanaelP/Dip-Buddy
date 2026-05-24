@@ -425,36 +425,57 @@ const AddItemModule = (() => {
     return null;
   }
 
-  // Lines to skip when extracting a product name
+  // Lines to disqualify when extracting a product name from OCR text
   const NAME_SKIP = [
-    /^\d+$/,                          // pure numbers
-    /^[\d\s\/\-\.]+$/,               // dates / number strings
+    /^\d+$/,                              // pure numbers
+    /^[\d\s\/\-\.]+$/,                   // dates / number strings
+    /\d{4}[A-Za-z]{3}\d{1,2}/,          // YYYYMMMDD lot codes e.g. "2026JUL03"
+    /\d{1,2}[A-Za-z]{3}\d{4}/,          // DDMONYYYY variant
+    /\$\s*[\d,\.]+/,                     // prices e.g. "$12.79" or "$17.99/lb"
+    /\d{1,2}:\d{2}/,                     // times e.g. "06:12 PM"
     /keep\s+refrigerated/i,
+    /sell\s*by/i,
+    /net\s*wt/i,
+    /unit\s*price/i,
+    /total\s*pri/i,
+    /allergen|ingredients|contains/i,
+    /publix/i,
     /customer\s+service/i,
     /made\s+in/i,
     /units\s*\/\s*unit/i,
     /part\s+(?:id|no)/i,
     /^bt#/i,
     /^upc/i,
-    /^[a-z]{2,3}\d{5,}/i,            // lot numbers like LA005410025518
+    /^[a-z]{2,3}\d{5,}/i,               // lot numbers like LA005410025518
     /^\d{3}[\s\-.]?\d{3}[\s\-.]?\d{4}$/, // phone numbers
-    /\d{10,}/,                        // long barcode strings
-    /^[0-9\s:]{6,}$/,                // timestamps / codes
+    /\d{10,}/,                           // long barcode strings
+    /^[0-9\s:]{6,}$/,                   // timestamps / codes
   ];
 
   function extractProductName(text) {
     const lines = text.split('\n').map(l => l.trim()).filter(l => l.length >= 4);
 
     for (const line of lines) {
+      // Must start with a letter — filters ".E bn -" style garbage
+      if (!/^[A-Za-z]/.test(line)) continue;
+
       if (NAME_SKIP.some(p => p.test(line))) continue;
       if (parseDateFromOCR(line)) continue;
 
-      // Must contain at least 3 letters
-      if ((line.match(/[A-Za-z]/g) || []).length < 3) continue;
+      const letters = (line.match(/[A-Za-z]/g) || []).length;
 
-      // Trim trailing noise characters
+      // Letter density > 50% — avoids strings like "A 2026JUL03"
+      if (letters / line.length < 0.5) continue;
+
+      // At least 5 letters total
+      if (letters < 5) continue;
+
       const cleaned = line.replace(/[^A-Za-z0-9\s\-&'\.]/g, '').trim();
-      if (cleaned.length >= 4) return cleaned;
+
+      // Require either 8+ chars OR 2+ space-separated words
+      if (cleaned.length < 8 && cleaned.split(/\s+/).length < 2) continue;
+
+      return cleaned;
     }
     return null;
   }
