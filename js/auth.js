@@ -177,6 +177,16 @@ function mapAuthError(code) {
   return messages[code] || 'Sign in failed. Please try again.';
 }
 
+// ─── Offline indicator ─────────────────────────────────────
+
+function updateOfflineBanner() {
+  const banner = document.getElementById('offline-banner');
+  if (banner) banner.hidden = navigator.onLine;
+}
+
+window.addEventListener('online',  updateOfflineBanner);
+window.addEventListener('offline', updateOfflineBanner);
+
 // ─── Exposed Interface ──────────────────────────────────────
 
 window.AuthModule = {
