@@ -835,8 +835,7 @@ input[type="number"]:focus { border-color: var(--accent); }
 }
 
 .settings-warn-input {
-  width: 80px;
-  flex-shrink: 0;
+  flex: 0 0 80px;
   text-align: center;
 }
 
