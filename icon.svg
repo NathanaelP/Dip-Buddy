@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Navy background — rx=112 approximates iOS icon rounding -->
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+
+  <!-- Bowl body -->
+  <ellipse cx="256" cy="310" rx="148" ry="38" fill="#1e3a5f"/>
+  <path d="M108 272 Q108 390 256 390 Q404 390 404 272 Z" fill="#1e3a5f"/>
+
+  <!-- Bowl rim highlight -->
+  <ellipse cx="256" cy="272" rx="148" ry="38" fill="none" stroke="#3b82f6" stroke-width="10"/>
+
+  <!-- Dip surface inside bowl -->
+  <ellipse cx="256" cy="272" rx="138" ry="30" fill="#2563eb"/>
+
+  <!-- Steam lines (three arcs above bowl) -->
+  <path d="M210 235 Q217 210 210 188" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M256 228 Q263 200 256 178" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M302 235 Q309 210 302 188" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+</svg>
