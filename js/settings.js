@@ -20,6 +20,7 @@ const SettingsModule = (() => {
 
     bindWarnDays();
     bindUserList();
+    bindAddUser();
   }
 
   // ─── Warn Days Before ────────────────────────────────────
@@ -152,6 +153,90 @@ const SettingsModule = (() => {
       btn.textContent = 'Error — retry';
     } finally {
       btn.disabled = false;
+    }
+  }
+
+  // ─── Add Team Member ─────────────────────────────────────
+  // Uses a secondary Firebase app instance so createUserWithEmailAndPassword
+  // does not sign out the currently logged-in admin.
+
+  function bindAddUser() {
+    const form    = document.getElementById('add-user-form');
+    const nameIn  = document.getElementById('new-user-name');
+    const emailIn = document.getElementById('new-user-email');
+    const passIn  = document.getElementById('new-user-password');
+    const roleIn  = document.getElementById('new-user-role');
+    const errEl   = document.getElementById('add-user-error');
+    const sucEl   = document.getElementById('add-user-success');
+    const btn     = document.getElementById('add-user-btn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      errEl.hidden = true;
+      sucEl.hidden = true;
+
+      const name     = nameIn.value.trim();
+      const email    = emailIn.value.trim();
+      const password = passIn.value;
+      const role     = roleIn.value;
+
+      if (!name)            { showErr('Name is required.');                  return; }
+      if (!email)           { showErr('Email is required.');                 return; }
+      if (password.length < 6) { showErr('Password must be at least 6 characters.'); return; }
+
+      btn.disabled    = true;
+      btn.textContent = 'Creating…';
+
+      // Secondary app keeps the admin's own auth session untouched.
+      const tmpName      = 'dip-buddy-create-' + Date.now();
+      const secondaryApp = firebase.initializeApp(firebase.app().options, tmpName);
+      const secondaryAuth = secondaryApp.auth();
+
+      try {
+        const cred = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+        const uid  = cred.user.uid;
+
+        await db.collection('users').doc(uid).set({
+          uid,
+          name,
+          email,
+          role,
+          createdAt: new Date().toISOString(),
+        });
+
+        // Append to the visible user list without a full reload
+        const list = document.getElementById('settings-user-list');
+        const myUid = AuthModule.getCurrentUser()?.uid;
+        list.appendChild(buildUserRow({ uid, name, email, role }, myUid));
+
+        // Show shareable credentials
+        sucEl.innerHTML =
+          `<strong>Account created!</strong><br>` +
+          `Name: ${esc(name)}<br>` +
+          `Email: ${esc(email)}<br>` +
+          `Password: ${esc(password)}<br>` +
+          `<span class="add-user-success-hint">Share these with ${esc(name)} in person.</span>`;
+        sucEl.hidden = false;
+        form.reset();
+      } catch (err) {
+        console.error('Create user error:', err);
+        const msg = err.code === 'auth/email-already-in-use'
+          ? 'An account with that email already exists.'
+          : err.code === 'auth/invalid-email'
+          ? 'Enter a valid email address.'
+          : 'Could not create account. Check your connection.';
+        showErr(msg);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Create Account';
+        await secondaryAuth.signOut().catch(() => {});
+        await secondaryApp.delete().catch(() => {});
+      }
+    });
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.hidden = false;
     }
   }
 
