@@ -176,11 +176,37 @@
         </div>
       </section>
 
-      <!-- Settings view (admin only) -->
+      <!-- Settings view -->
       <section id="view-settings" class="view" hidden>
         <header class="dash-header">
           <h1 class="dash-title">Settings</h1>
         </header>
+
+        <!-- Change Password (all users) -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Change Password</h2>
+          <p class="settings-section-desc">Enter your current password to set a new one.</p>
+          <form id="change-password-form" novalidate>
+            <div class="field-group">
+              <label for="cp-current">Current Password</label>
+              <input type="password" id="cp-current" autocomplete="current-password" placeholder="••••••••">
+            </div>
+            <div class="field-group">
+              <label for="cp-new">New Password</label>
+              <input type="password" id="cp-new" autocomplete="new-password" placeholder="min. 6 characters">
+            </div>
+            <div class="field-group">
+              <label for="cp-confirm">Confirm New Password</label>
+              <input type="password" id="cp-confirm" autocomplete="new-password" placeholder="••••••••">
+            </div>
+            <div id="cp-error" class="error-message" hidden></div>
+            <div id="cp-success" class="settings-status settings-status--ok" hidden>Password updated.</div>
+            <button type="submit" id="cp-btn" class="btn btn-primary">Update Password</button>
+          </form>
+        </div>
+
+        <!-- Admin-only sections -->
+        <div id="settings-admin-sections">
 
         <!-- Warn Days -->
         <div class="settings-section">
@@ -233,6 +259,8 @@
             <button type="submit" id="add-user-btn" class="btn btn-primary">Create Account</button>
           </form>
         </div>
+
+        </div><!-- /settings-admin-sections -->
       </section>
 
     </main>

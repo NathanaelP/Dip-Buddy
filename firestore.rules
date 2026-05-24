@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    // Reads the role field from the requesting user's /users doc.
+    // Costs one read per rule evaluation that calls this — acceptable for
+    // a small team app with low request volume.
+    function isAdmin() {
+      return isAuthed() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ── Product catalog (/products/{barcode}) ─────────────────
+    // Associates need create so new barcodes are auto-saved on first scan.
+    // Editing or deleting catalog entries is admin-only.
+
+    match /products/{barcode} {
+      allow read:          if isAuthed();
+      allow create:        if isAuthed();
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Floor items (/floorItems/{itemId}) ────────────────────
+    // Associates can create new items and mark any item pulled (status +
+    // updatedAt only). Full edits and deletes are admin-only.
+
+    match /floorItems/{itemId} {
+      allow read, create: if isAuthed();
+      allow update: if isAdmin() ||
+        (isAuthed() &&
+         request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['status', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+
+    // ── User profiles (/users/{userId}) ───────────────────────
+    // Each user can read and update their own doc (name, etc.).
+    // Admins can read all docs (needed for the team member list) and
+    // write any doc (role changes, creating new users via Settings).
+
+    match /users/{userId} {
+      allow get:    if isAuthed() && (request.auth.uid == userId || isAdmin());
+      allow list:   if isAdmin();
+      allow create: if isAuthed() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAuthed() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── Global settings (/settings/global) ───────────────────
+    // All authenticated users read warnDaysBefore on dashboard load.
+    // Only admins can change settings.
+
+    match /settings/{docId} {
+      allow read:  if isAuthed();
+      allow write: if isAdmin();
+    }
+  }
+}
