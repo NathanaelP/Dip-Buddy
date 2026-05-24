@@ -1,6 +1,6 @@
 // Cache name — increment (e.g. dip-buddy-v2) after each deploy that changes
 // the app shell so users pick up the new files on next load.
-const CACHE = 'dip-buddy-v2';
+const CACHE = 'dip-buddy-v3';
 
 // Local app-shell files to precache on install.
 // CDN scripts are intentionally excluded — a third-party fetch failure during

@@ -7,20 +7,77 @@ const SettingsModule = (() => {
     if (initialized) return;
     initialized = true;
 
-    // Gate: redirect associates to dashboard
     const profile = AuthModule.getProfile();
+
+    // Change Password is available to every authenticated user
+    bindChangePassword();
+
+    // Admin-only sections
     if (!profile || profile.role !== 'admin') {
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.view === 'dashboard');
-      });
-      AuthModule.navigateTo('dashboard');
-      window.location.hash = 'dashboard';
+      document.getElementById('settings-admin-sections').hidden = true;
       return;
     }
 
     bindWarnDays();
     bindUserList();
     bindAddUser();
+  }
+
+  // ─── Change Password ─────────────────────────────────────
+
+  function bindChangePassword() {
+    const form    = document.getElementById('change-password-form');
+    const currIn  = document.getElementById('cp-current');
+    const newIn   = document.getElementById('cp-new');
+    const confIn  = document.getElementById('cp-confirm');
+    const errEl   = document.getElementById('cp-error');
+    const sucEl   = document.getElementById('cp-success');
+    const btn     = document.getElementById('cp-btn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      errEl.hidden = true;
+      sucEl.hidden = true;
+
+      const current = currIn.value;
+      const newPass = newIn.value;
+      const confirm = confIn.value;
+
+      if (!current)          { showErr('Enter your current password.');      return; }
+      if (newPass.length < 6){ showErr('New password must be at least 6 characters.'); return; }
+      if (newPass !== confirm){ showErr('New passwords do not match.');       return; }
+      if (newPass === current){ showErr('New password must differ from current.'); return; }
+
+      btn.disabled    = true;
+      btn.textContent = 'Updating…';
+
+      try {
+        const user       = auth.currentUser;
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, current);
+        await user.reauthenticateWithCredential(credential);
+        await user.updatePassword(newPass);
+        form.reset();
+        sucEl.hidden = false;
+        setTimeout(() => { sucEl.hidden = true; }, 4000);
+      } catch (err) {
+        console.error('Password change error:', err);
+        const msg =
+          err.code === 'auth/wrong-password'     ? 'Current password is incorrect.' :
+          err.code === 'auth/weak-password'      ? 'New password must be at least 6 characters.' :
+          err.code === 'auth/requires-recent-login'
+            ? 'Session expired — sign out and back in, then try again.' :
+          'Could not update password. Check your connection.';
+        showErr(msg);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Update Password';
+      }
+    });
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
   }
 
   // ─── Warn Days Before ────────────────────────────────────
