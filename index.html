@@ -203,6 +203,36 @@
           <div id="settings-users-error" class="error-message" hidden></div>
           <div id="settings-user-list" class="user-list"></div>
         </div>
+
+        <!-- Add Team Member -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Add Team Member</h2>
+          <p class="settings-section-desc">Create a login for a new associate. Share the credentials with them in person.</p>
+          <form id="add-user-form" novalidate>
+            <div class="field-group">
+              <label for="new-user-name">Name</label>
+              <input type="text" id="new-user-name" autocomplete="off" placeholder="e.g. Maria">
+            </div>
+            <div class="field-group">
+              <label for="new-user-email">Email</label>
+              <input type="email" id="new-user-email" autocomplete="off" inputmode="email" placeholder="maria@example.com">
+            </div>
+            <div class="field-group">
+              <label for="new-user-password">Temporary Password</label>
+              <input type="text" id="new-user-password" autocomplete="off" placeholder="min. 6 characters">
+            </div>
+            <div class="field-group">
+              <label for="new-user-role">Role</label>
+              <select id="new-user-role" class="select-input">
+                <option value="associate">Associate</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div id="add-user-error" class="error-message" hidden></div>
+            <div id="add-user-success" class="add-user-success" hidden></div>
+            <button type="submit" id="add-user-btn" class="btn btn-primary">Create Account</button>
+          </form>
+        </div>
       </section>
 
     </main>
