@@ -1,6 +1,7 @@
 const AddItemModule = (() => {
   let initialized    = false;
   let scannedBarcode = null;
+  let scannedBrand   = null;
   let codeReader     = null;
   let scannerActive  = false;
 
@@ -72,6 +73,7 @@ const AddItemModule = (() => {
         id:          generateUUID(),
         barcode:     scannedBarcode || null,
         productName,
+        brand:       scannedBrand  || '',
         quantity:    (quantity !== null && !isNaN(quantity)) ? quantity : null,
         dateStocked: today,
         expDate,
@@ -208,6 +210,7 @@ const AddItemModule = (() => {
     }
 
     scannedBarcode = barcode;
+    scannedBrand   = (product && product.brand) ? product.brand : null;
 
     if (product && product.name) {
       document.getElementById('ai-product-name').value = product.name;
@@ -266,6 +269,7 @@ const AddItemModule = (() => {
 
   function clearScan() {
     scannedBarcode = null;
+    scannedBrand   = null;
     document.getElementById('ai-product-name').value = '';
     document.getElementById('ai-slow-mover').checked = false;
     const banner = document.getElementById('scan-result');
