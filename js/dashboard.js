@@ -76,10 +76,15 @@ const DashboardModule = (() => {
     const who     = item.addedByName ? `<span class="meta-item">&#128100; ${esc(item.addedByName)}</span>` : '';
     const isAdmin = AuthModule.getProfile()?.role === 'admin';
 
+    const brand = item.brand ? `<span class="card-brand">${esc(item.brand)}</span>` : '';
+
     return `
       <div class="item-card item-card--${s}" data-id="${esc(item.id)}">
         <div class="card-top">
-          <span class="card-name">${esc(item.productName)}</span>
+          <div class="card-name-block">
+            <span class="card-name">${esc(item.productName)}</span>
+            ${brand}
+          </div>
           <span class="badge badge-${s}">${label}</span>
         </div>
         ${(loc || who) ? `<div class="card-meta">${loc}${who}</div>` : ''}
